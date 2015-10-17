@@ -15,7 +15,7 @@ module SortingSuite
         end
       end
       array
-    end
+    end 
   end
 end
 
