@@ -24,7 +24,13 @@ class BenchmarkTest < Minitest::Test
   end
 
   def test_time_calls_given_sorter
-    skip
+    benchmark=SortingSuite::Benchmark.new
+
+    benchmark.time(SortingSuite::MergeSort)
+    assert_equal SortingSuite::MergeSort,benchmark.sorter_class
+
+    benchmark.time(SortingSuite::InsertionSort)
+    assert_equal SortingSuite::InsertionSort,benchmark.sorter_class
   end
 
   def test_time_returns_sorting_time
