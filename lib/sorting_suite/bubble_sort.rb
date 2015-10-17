@@ -15,9 +15,9 @@ module SortingSuite
         end
       end
       array
-    end 
+    end
   end
 end
 
 sorter = SortingSuite::BubbleSort.new
-sorter.sort([4, 2, 5, 3, 1])
+sorter.sort([4, 2, 5, 3, 1,34,6])
