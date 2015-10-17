@@ -22,7 +22,7 @@ class MergeSort
         ordered_array += first_half
       end
 
-      return ordered_array
+      ordered_array
     end
   end
 end
