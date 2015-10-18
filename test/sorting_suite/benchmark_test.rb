@@ -10,39 +10,92 @@ class BenchmarkTest < Minitest::Test
   def test_time_uses_given_or_existing_or_empty_array
     benchmark=SortingSuite::Benchmark.new
 
+    #none given, none existing
     benchmark.time(SortingSuite::MergeSort)
     assert_equal [],benchmark.array
 
+    #array given, none existing
     benchmark.time(SortingSuite::BubbleSort,[3,1,4,2])
     assert_equal [3,1,4,2],benchmark.array
 
+    #array given, array existing
     benchmark.time(SortingSuite::InsertionSort)
     assert_equal [3,1,4,2],benchmark.array
 
+    #array given, none existing
+    benchmark=SortingSuite::Benchmark.new
     benchmark.time(SortingSuite::MergeSort,%w(o e d k a c l d i))
     assert_equal %w(o e d k a c l d i),benchmark.array
   end
 
-  def test_time_calls_given_sorter
+  def test_time_uses_given_sorter
     benchmark=SortingSuite::Benchmark.new
 
-    benchmark.time(SortingSuite::MergeSort)
-    assert_equal SortingSuite::MergeSort,benchmark.sorter_class
+    result=benchmark.time(SortingSuite::MergeSort).split.first
+    assert_equal 'MergeSort',result
 
-    benchmark.time(SortingSuite::InsertionSort)
-    assert_equal SortingSuite::InsertionSort,benchmark.sorter_class
+    result=benchmark.time(SortingSuite::InsertionSort).split.first
+    assert_equal 'InsertionSort',result
   end
 
   def test_time_returns_sorting_time
-    skip
+    benchmark=SortingSuite::Benchmark.new
+    puts returned = benchmark.time(SortingSuite::MergeSort)
+
+    #returned string format is correct
+    assert_equal "MergeSort took seconds",returned.gsub(/[0-9]./,'')
+    assert_kind_of Float, returned.scan(/[0-9]./).join.to_f
+
+    #time close to 0 when empty
+    assert_in_delta 0, returned.scan(/[0-9]./).join.to_f, 0.01
+
+    #longer time for longer arrays with MergeSort
+    puts returned_short = benchmark.time(SortingSuite::MergeSort,[9,5,2,1,7])
+    puts returned_long = benchmark.time(SortingSuite::MergeSort,([9,5,2,1,7]*5))
+    assert returned_short.scan(/[0-9]./).join.to_f < returned_long.scan(/[0-9]./).join.to_f
+
+    #longer time for longer arrays with BubbleSort
+    puts returned_short = benchmark.time(SortingSuite::BubbleSort,[9,5,2,1,7])
+    puts returned_long = benchmark.time(SortingSuite::BubbleSort,([9,5,2,1,7]*5))
+    assert returned_short.scan(/[0-9]./).join.to_f < returned_long.scan(/[0-9]./).join.to_f
+
   end
+
 
   def test_fastest_uses_given_or_existing_or_empty_array
-    skip
+    benchmark=SortingSuite::Benchmark.new
+
+    #none given, none existing
+    benchmark.fastest()
+    assert_equal [],benchmark.array
+
+    #array given, none existing
+    benchmark.fastest([3,1,4,2])
+    assert_equal [3,1,4,2],benchmark.array
+
+    #array given, array existing
+    benchmark.fastest()
+    assert_equal [3,1,4,2],benchmark.array
+
+    #array given, none existing
+    benchmark=SortingSuite::Benchmark.new
+    benchmark.fastest(%w(o e d k a c l d i))
+    assert_equal %w(o e d k a c l d i),benchmark.array
   end
 
-  def test_fastest_calls_every_sorter
-    skip
+  def test_run_all_calls_every_sorter
+    benchmark=SortingSuite::Benchmark.new
+    array=%w(o e d k a c l d i)*250
+    assert_equal 3, benchmark.run_all(array).size
+    assert_equal 3, benchmark.run_all(array).size
+
+    all_runs = {
+      BubbleSort:benchmark.time(SortingSuite::BubbleSort,array).scan(/[0-9]./).join.to_f,
+      InsertionSort:benchmark.time(SortingSuite::InsertionSort,array).scan(/[0-9]./).join.to_f,
+      MergeSort:benchmark.time(SortingSuite::MergeSort,array).scan(/[0-9]./).join.to_f
+    }
+    p all_runs.values.reduce(:+)
+    assert_in_delta all_runs.values.reduce(:+),benchmark.run_all(array).values.map { |x| x.split.last.to_f }.reduce(:+),3000
   end
 
   def test_fastest_returns_faster_sorter_data
@@ -50,7 +103,24 @@ class BenchmarkTest < Minitest::Test
   end
 
   def test_slowest_uses_given_or_existing_or_empty_array
-    skip
+    benchmark=SortingSuite::Benchmark.new
+
+    #none given, none existing
+    benchmark.slowest()
+    assert_equal [],benchmark.array
+
+    #array given, none existing
+    benchmark.slowest([3,1,4,2])
+    assert_equal [3,1,4,2],benchmark.array
+
+    #array given, array existing
+    benchmark.slowest()
+    assert_equal [3,1,4,2],benchmark.array
+
+    #array given, none existing
+    benchmark=SortingSuite::Benchmark.new
+    benchmark.slowest(%w(o e d k a c l d i))
+    assert_equal %w(o e d k a c l d i),benchmark.array
   end
 
   def test_slowest_calls_every_sorter

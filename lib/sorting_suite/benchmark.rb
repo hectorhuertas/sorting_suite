@@ -4,7 +4,6 @@ require 'sorting_suite/merge_sort'
 module SortingSuite
 class Benchmark
   attr_reader :array
-  attr_reader :sorter_class
 
   def time(sorter_class,array=nil)
     if array.nil?
@@ -12,7 +11,44 @@ class Benchmark
     else
       @array=array
     end
-    @sorter_class=sorter_class
+
+    array_to_sort =@array.map{|x| x}
+
+    sorter=sorter_class.new
+    starting_time = Time.now
+    sorter.sort(array_to_sort)
+    duration = Time.now - starting_time
+
+    "#{sorter.class.name.split('::').last} took #{duration *1000} seconds"
+
+  end
+
+  def run_all(array=nil)
+    result={}
+    sorters=SortingSuite.constants.map{|x|x unless x==:Benchmark}.compact
+    sorters.each do |sorter|
+      result[sorter]=time(Object.const_get("SortingSuite::"+sorter.to_s),array)
+
+    end
+    p 'run all'
+    p result
+    # p sorters.size
+  end
+  def fastest(array=nil)
+    if array.nil?
+      @array||=[]
+    else
+      @array=array
+    end
+    @array
+  end
+
+  def slowest(array=nil)
+    if array.nil?
+      @array||=[]
+    else
+      @array=array
+    end
   end
 end
 end
