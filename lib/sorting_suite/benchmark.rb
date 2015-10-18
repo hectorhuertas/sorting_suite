@@ -6,6 +6,9 @@ require_relative 'selection_sort'
 module SortingSuite
   class Benchmark
     attr_reader :array
+    def initialize(array=nil)
+      handle_array(array)
+    end
 
     def handle_array(array)
       if array.nil?
