@@ -1,7 +1,8 @@
-require 'sorting_suite/bubble_sort'     # ~> LoadError: cannot load such file -- sorting_suite/bubble_sort
-require 'sorting_suite/insertion_sort'
-require 'sorting_suite/merge_sort'
-require 'sorting_suite/selection_sort'
+require_relative 'bubble_sort'
+require_relative 'insertion_sort'
+require_relative 'merge_sort'
+require_relative 'selection_sort'
+
 module SortingSuite
   class Benchmark
     attr_reader :array
@@ -14,8 +15,7 @@ module SortingSuite
       end
     end
 
-    def time(sorter_class, array = nil)
-
+    def measure_time(sorter_class, array = nil)
       handle_array(array)
 
       sorter = sorter_class.new
@@ -24,50 +24,58 @@ module SortingSuite
       sorter.sort(@array.dup)
       duration = Time.now - starting_time
 
-      "#{sorter.class.name.split('::').last} took #{duration * 1000} seconds"
+      { sorter_class => duration }
+    end
+
+    def time(sorter_class, array = nil)
+      handle_array(array)
+
+      benchmark_result = measure_time(sorter_class)
+
+      sorter_name = benchmark_result.keys.first.name.split('::').last
+      sorter_time = benchmark_result.values.last
+      "#{sorter_name} took #{'%f' % sorter_time} seconds"
+    end
+
+    def sorters
+      module_members = SortingSuite.constants
+      module_members.delete_if { |member| member.to_s.slice(-4..-1) != 'Sort' }
     end
 
     def run_all(array = nil)
+      handle_array(array)
+
       result = {}
-      sorters = SortingSuite.constants.map { |x| x unless x == :Benchmark }.compact
       sorters.each do |sorter|
-        result[sorter] = time(Object.const_get('SortingSuite::' + sorter.to_s), array).scan(/[0-9]./).join.to_f
+        sorter_class = Object.const_get('SortingSuite::' + sorter.to_s)
+        result[sorter] = measure_time(sorter_class).values.first
       end
-      p 'run all'
-      p result
-      # p sorters.size
+
+      result
     end
 
-    def fastest_logic(sorters_times)
+    def pick_fastest(sorters_times)
       sorters_times.key(sorters_times.values.min)
     end
 
-    def slowest_logic(sorters_times)
+    def pick_slowest(sorters_times)
       sorters_times.key(sorters_times.values.max)
     end
 
     def fastest(array = nil)
-      if array.nil?
-        @array ||= []
-      else
-        @array = array
-      end
-      @array
+      handle_array(array)
+
+      fastest_sorter = pick_fastest(run_all)
+
+      "#{fastest_sorter} is the fastest"
     end
 
     def slowest(array = nil)
-      if array.nil?
-        @array ||= []
-      else
-        @array = array
-      end
+      handle_array(array)
+
+      slowest_sorter = pick_slowest(run_all)
+
+      "#{slowest_sorter} is the slowest"
     end
   end
 end
-
-# ~> LoadError
-# ~> cannot load such file -- sorting_suite/bubble_sort
-# ~>
-# ~> /Users/hectorhuertas/.rvm/rubies/ruby-2.2.3/lib/ruby/2.2.0/rubygems/core_ext/kernel_require.rb:54:in `require'
-# ~> /Users/hectorhuertas/.rvm/rubies/ruby-2.2.3/lib/ruby/2.2.0/rubygems/core_ext/kernel_require.rb:54:in `require'
-# ~> /Users/hectorhuertas/turing/1module/projects/sorting_suite/lib/sorting_suite/benchmark.rb:1:in `<main>'

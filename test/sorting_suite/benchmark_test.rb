@@ -43,7 +43,7 @@ class BenchmarkTest < Minitest::Test
     puts returned = benchmark.time(SortingSuite::MergeSort)
 
     #returned string format is correct
-    assert_equal "MergeSort took seconds",returned.gsub(/[0-9]./,'')
+    assert_equal "MergeSort took  seconds",returned.gsub(/[0-9]./,'')
     assert_kind_of Float, returned.scan(/[0-9]./).join.to_f
 
     #time close to 0 when empty
@@ -105,16 +105,16 @@ class BenchmarkTest < Minitest::Test
 
   end
 
-  def test_fastest_logic_returns_faster_sorter_data
+  def test_pick_fastest_returns_faster_sorter_data
     benchmark=SortingSuite::Benchmark.new
     hash={a:5,b:0,c:3,d:1}
-    assert_equal :b,benchmark.fastest_logic(hash)
+    assert_equal :b,benchmark.pick_fastest(hash)
   end
 
-  def test_slowest_logic_returns_slower_sorter_data
+  def test_pick_slowest_returns_slower_sorter_data
     benchmark=SortingSuite::Benchmark.new
     hash={a:5,b:0,c:3,d:1}
-    assert_equal :a,benchmark.slowest_logic(hash)
+    assert_equal :a,benchmark.pick_slowest(hash)
   end
 
   def test_to_s_has_correct_formatting
