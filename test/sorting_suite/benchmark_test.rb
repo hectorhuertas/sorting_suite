@@ -90,7 +90,9 @@ class BenchmarkTest < Minitest::Test
     all_runs = {
       BubbleSort:benchmark.time(SortingSuite::BubbleSort,array).scan(/[0-9]./).join.to_f,
       InsertionSort:benchmark.time(SortingSuite::InsertionSort,array).scan(/[0-9]./).join.to_f,
-      MergeSort:benchmark.time(SortingSuite::MergeSort,array).scan(/[0-9]./).join.to_f
+      MergeSort:benchmark.time(SortingSuite::MergeSort,array).scan(/[0-9]./).join.to_f,
+      SelectionSort:benchmark.time(SortingSuite::SelectionSort,array).scan(/[0-9]./).join.to_f
+
     }
 
     #return hash of times of completion per sorting_suite
