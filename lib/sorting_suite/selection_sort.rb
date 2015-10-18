@@ -1,32 +1,29 @@
+require_relative 'array_sorter'
+
 module SortingSuite
-class SelectionSort
-  def sort(array_in)
-    (array_in.size()-1).times do |pos|
-      min=array_in[pos]
-      # array_in.slice(pos..-1)
-      array_in.slice((pos+1)..-1).each do |value|
-        min
-        value
-        min=value if value<min
-      end
-      min
-      array_in[pos]
-      if min<array_in[pos]
-        # array_in.index(min)
-        aux=min
-        # array_in.index(min)=array_in[pos]
-        array_in[array_in.index(min)]=array_in[pos]
-        array_in[pos]=min
-      end
+  class SelectionSort
+    include ArraySorter
+
+    def initialize(array = nil)
+      handle_array(array)
     end
 
+    def swap(array, pos, min)
+      aux = min
+      array[array.index(min)] = array[pos]
+      array[pos] = min
+    end
 
+    def sort_logic(array)
+      (array.size - 1).times do |pos|
+        min = array[pos]
+        array.slice((pos + 1)..-1).each do |value|
+          min = value if value < min
+        end
+        swap(array, pos, min) if min < array[pos]
+      end
 
-    array_in
-
+      array
+    end
   end
 end
-end
-
-sorter=SortingSuite::SelectionSort.new
-sorter.sort([2,6,3,1])
