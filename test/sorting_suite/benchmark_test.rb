@@ -86,7 +86,7 @@ class BenchmarkTest < Minitest::Test
   def test_run_all_calls_every_sorter_and_returns_hash_sorter_time
 
     benchmark=SortingSuite::Benchmark.new
-    array=%w(o e d k a c l d i)*250
+    array=%w(o e d k a c l d i)*25
     all_runs = {
       BubbleSort:benchmark.time(SortingSuite::BubbleSort,array).scan(/[0-9]./).join.to_f,
       InsertionSort:benchmark.time(SortingSuite::InsertionSort,array).scan(/[0-9]./).join.to_f,
