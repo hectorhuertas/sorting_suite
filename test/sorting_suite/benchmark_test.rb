@@ -62,72 +62,60 @@ class BenchmarkTest < Minitest::Test
   end
 
 
-  def test_fastest_uses_given_or_existing_or_empty_array
+  def test_run_all_uses_given_or_existing_or_empty_array
     benchmark=SortingSuite::Benchmark.new
 
     #none given, none existing
-    benchmark.fastest()
+    benchmark.run_all()
     assert_equal [],benchmark.array
 
     #array given, none existing
-    benchmark.fastest([3,1,4,2])
+    benchmark.run_all([3,1,4,2])
     assert_equal [3,1,4,2],benchmark.array
 
     #array given, array existing
-    benchmark.fastest()
+    benchmark.run_all()
     assert_equal [3,1,4,2],benchmark.array
 
     #array given, none existing
     benchmark=SortingSuite::Benchmark.new
-    benchmark.fastest(%w(o e d k a c l d i))
+    benchmark.run_all(%w(o e d k a c l d i))
     assert_equal %w(o e d k a c l d i),benchmark.array
   end
 
-  def test_run_all_calls_every_sorter
+  def test_run_all_calls_every_sorter_and_returns_hash_sorter_time
+
     benchmark=SortingSuite::Benchmark.new
     array=%w(o e d k a c l d i)*250
-    assert_equal 3, benchmark.run_all(array).size
-    assert_equal 3, benchmark.run_all(array).size
-
     all_runs = {
       BubbleSort:benchmark.time(SortingSuite::BubbleSort,array).scan(/[0-9]./).join.to_f,
       InsertionSort:benchmark.time(SortingSuite::InsertionSort,array).scan(/[0-9]./).join.to_f,
       MergeSort:benchmark.time(SortingSuite::MergeSort,array).scan(/[0-9]./).join.to_f
     }
-    p all_runs.values.reduce(:+)
-    assert_in_delta all_runs.values.reduce(:+),benchmark.run_all(array).values.map { |x| x.split.last.to_f }.reduce(:+),3000
+
+    #return hash of times of completion per sorting_suite
+    assert_kind_of Symbol,benchmark.run_all(array).keys.sample
+    assert_kind_of Float,benchmark.run_all(array).values.sample
+    #runs every test
+    assert_equal all_runs.keys,benchmark.run_all(array).keys
+    #completion time difference is less than 3 seconds
+    assert_in_delta all_runs.values.reduce(:+),benchmark.run_all(array).values.reduce(:+),3000
+
   end
 
-  def test_fastest_returns_faster_sorter_data
-    skip
-  end
-
-  def test_slowest_uses_given_or_existing_or_empty_array
+  def test_fastest_logic_returns_faster_sorter_data
     benchmark=SortingSuite::Benchmark.new
+    hash={a:5,b:0,c:3,d:1}
+    assert_equal :b,benchmark.fastest_logic(hash)
+  end
 
-    #none given, none existing
-    benchmark.slowest()
-    assert_equal [],benchmark.array
-
-    #array given, none existing
-    benchmark.slowest([3,1,4,2])
-    assert_equal [3,1,4,2],benchmark.array
-
-    #array given, array existing
-    benchmark.slowest()
-    assert_equal [3,1,4,2],benchmark.array
-
-    #array given, none existing
+  def test_slowest_logic_returns_slower_sorter_data
     benchmark=SortingSuite::Benchmark.new
-    benchmark.slowest(%w(o e d k a c l d i))
-    assert_equal %w(o e d k a c l d i),benchmark.array
+    hash={a:5,b:0,c:3,d:1}
+    assert_equal :a,benchmark.slowest_logic(hash)
   end
 
-  def test_slowest_calls_every_sorter
-    skip
-  end
-
-  def test_slowest_returns_slower_sorter_data
+  def test_to_s_has_correct_formatting
     skip
   end
 end

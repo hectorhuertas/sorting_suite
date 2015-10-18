@@ -27,13 +27,22 @@ class Benchmark
     result={}
     sorters=SortingSuite.constants.map{|x|x unless x==:Benchmark}.compact
     sorters.each do |sorter|
-      result[sorter]=time(Object.const_get("SortingSuite::"+sorter.to_s),array)
+      result[sorter]=time(Object.const_get("SortingSuite::"+sorter.to_s),array).scan(/[0-9]./).join.to_f
 
     end
     p 'run all'
     p result
     # p sorters.size
   end
+
+  def fastest_logic(sorters_times)
+    sorters_times.key(sorters_times.values.min)
+  end
+
+  def slowest_logic(sorters_times)
+    sorters_times.key(sorters_times.values.max)
+  end
+
   def fastest(array=nil)
     if array.nil?
       @array||=[]
