@@ -47,13 +47,13 @@ class MergeSortTest < Minitest::Test
     assert_equal [1, 2, 6, 8, 9], sorter.sort([9, 8, 6, 2, 1])
   end
 
-  def test_sort_non_destructive
+  def test_sort_doesnt_modify_original_array
     sorter = SortingSuite::MergeSort.new([9, 8, 6, 2, 1])
     sorter.sort
     assert_equal [9, 8, 6, 2, 1], sorter.array
   end
 
-  def test_sort_destructive
+  def test_sort_bang_modifies_original_array
     sorter = SortingSuite::MergeSort.new([9, 8, 6, 2, 1])
     sorter.sort!
     assert_equal [1, 2, 6, 8, 9], sorter.array
